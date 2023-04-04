@@ -1,0 +1,187 @@
+{% extends 'store/_Master.html' %}
+{% load static %}
+{% block title_tab %}EStore | Đăng nhập 2{% endblock %}
+
+{% block main_content %}
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb-wrap">
+        <div class="container-fluid">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Login & Register 2</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    
+    <!-- Login Start -->
+    <div class="login">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">    
+                    <div class="register-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ result_register|safe }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form.ho.label }}</label>
+                                    {{ form.ho }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form.ten.label }}</label>
+                                    {{ form.ten }}
+                                </div>
+                                <div class="col-md-12">
+                                    <label>{{ form.email.label }}</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form.mat_khau.label }}</label>
+                                    {{ form.mat_khau }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form.xac_nhan_mat_khau.label }}</label>
+                                    {{ form.xac_nhan_mat_khau }}
+                                </div>
+                                <div class="col-md-12">
+                                    <label>{{ form.dien_thoai.label }}</label>
+                                    {{ form.dien_thoai }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label>{{ form.tinh_tp.label }}</label>
+                                    {{ form.tinh_tp }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label>{{ form.quan_huyen.label }}</label>
+                                    {{ form.quan_huyen }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label>{{ form.phuong_xa.label }}</label>
+                                    {{ form.phuong_xa }}
+                                </div>
+                                <div class="col-md-12">
+                                    <label>{{ form.dia_chi.label }}</label>
+                                    {{ form.dia_chi }}
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn" type="submit" name="btnDangKy" value="Đăng ký">Đăng ký</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="login-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ result_login|safe }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>E-mail</label>
+                                    <input class="form-control" type="email" placeholder="E-mail" name="email">
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Mật khẩu</label>
+                                    <input class="form-control" type="password" placeholder="Mật khẩu" name="mat_khau">
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn" type="submit" name="btnDangNhap" value="Đăng nhập">Đăng nhập</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Login End -->
+        
+    <script>
+        $(document).ready(function(){
+            // Tỉnh/TP
+            var tinh_tp_arr = new Array{{ provinces|safe }};
+            
+            $('#id_tinh_tp').append($('<option>', {
+                value: '0',
+                text : 'Chọn Tỉnh/TP',
+            }, '</option>' ));
+            $.each(tinh_tp_arr, function (i, item) {
+                $('#id_tinh_tp').append($('<option>', {
+                    value: item,
+                    text : item,
+                }, '</option>' ));
+            });
+    
+            // Quận/Huyện
+            var quan_huyen_arr = new Array{{ data_str_districts|safe }};
+            var quan_huyen = new Array();
+            quan_huyen[0] = 'Chọn Quận/Huyện'
+            {% for province in provinces %}
+                quan_huyen['{{ province }}'] = quan_huyen_arr[{{ forloop.counter0 }}]
+            {% endfor %}
+    
+            // Phường/Xã
+            var phuong_xa_arr = new Array{{ data_str_wards|safe }};
+            var phuong_xa = new Array();
+            {% for district in data_list_districts %}
+                phuong_xa['{{ district }}'] = phuong_xa_arr[{{ forloop.counter0 }}]
+            {% endfor %}
+    
+    
+            $('#id_tinh_tp').change(function(){
+                var c = $(this).val();
+                var quan_huyen_arr = quan_huyen[c].split("|");
+                $('#id_quan_huyen').empty();
+                $('#id_phuong_xa').empty();
+                if (c==0) {
+                    $('#id_quan_huyen').append($('<option>', {
+                        value: '0',
+                        text: 'Chọn Quận/Huyện',
+                    }, '</option>'));
+                } else {
+                    $('#id_quan_huyen').append($('<option>', {
+                        value: '0',
+                        text: 'Chọn Quận/Huyện',
+                    }, '</option>'));
+                    $.each(quan_huyen_arr, function (i, item_quan_huyen) {
+                        $('#id_quan_huyen').append($('<option>', {
+                            value: item_quan_huyen,
+                            text: item_quan_huyen,
+                        }, '</option>'));
+                    });
+                }
+                $('#id_phuong_xa').append($('<option>', {
+                    value: '0',
+                    text: 'Chọn Phường/Xã',
+                }, '</option>'));
+            });
+            $('#id_quan_huyen').change(function(){
+                var s = $(this).val();
+                if(s=='0'){
+                    $('#id_phuong_xa').empty();
+                    $('#id_phuong_xa').append($('<option>', {
+                        value: '0',
+                        text: 'Chọn Phường/Xã',
+                    }, '</option>'));
+                }
+                var phuong_xa_arr = phuong_xa[s].split("|");
+                $('#id_phuong_xa').empty();
+                $('#id_phuong_xa').append($('<option>', {
+                    value: '0',
+                    text: 'Chọn Phường/Xã',
+                }, '</option>'));
+                $.each(phuong_xa_arr, function (j, item_phuong_xa) {
+                    $('#id_phuong_xa').append($('<option>', {
+                        value: item_phuong_xa,
+                        text: item_phuong_xa,
+                    }, '</option>'));
+                });
+            });
+        });
+    </script>
+{% endblock %}

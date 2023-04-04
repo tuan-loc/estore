@@ -1,0 +1,197 @@
+{% extends 'store/_Master.html' %}
+{% load static %}
+{% load humanize %}
+{% load mathfilters %}
+{% block title_tab %}EStore | Thông tin của tôi{% endblock %}
+
+{% block main_content %}
+
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+    <div class="container-fluid">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Thông tin của tôi</li>
+        </ul>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- My Account Start -->
+<div class="my-account">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="account-nav" data-toggle="pill" href="#account-tab" role="tab"><i
+                            class="fa fa-user"></i>Tài khoản của tôi</a>
+                    <a class="nav-link" id="orders-nav" data-toggle="pill" href="#orders-tab" role="tab"><i
+                            class="fa fa-shopping-bag"></i>Đơn hàng</a>
+                    <a class="nav-link" href="{% url 'customer:logout' %}"><i class="fa fa-sign-out-alt"></i>Đăng
+                        xuất</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content">
+                    <div class="tab-pane fade" id="orders-tab" role="tabpanel" aria-labelledby="orders-nav">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Mã ĐH</th>
+                                        <th>Ngày đặt hàng</th>
+                                        <th>Tổng thành tiền</th>
+                                        <th>Trạng thái</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in list_orders %}
+                                    <tr>
+                                        <td>#{{ order.pk }}</td>
+                                        <td>{{ order.created|date:'d-m-Y H:i' }}</td>
+                                        <td>{{ order.total|floatformat:"0"|intcomma }}</td>
+                                        {% if order.status == 1 %}
+                                        <td><span class="badge badge-success">Đã giao</span></td>
+                                        {% else %}
+                                        <td><span class="badge badge-danger">Chưa giao</span></td>
+                                        {% endif %}
+                                        <td><button class="btn" data-toggle="modal" data-target="#o{{ order.pk }}">Chi
+                                                tiết</button></td>
+                                    </tr>
+
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show active" id="account-tab" role="tabpanel"
+                        aria-labelledby="account-nav">
+                        <h4>Thông tin của tôi</h4>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ result_update|safe }}
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="ho"
+                                        value="{{ request.session.s_khachhang.ho }}" placeholder="Họ" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="ten"
+                                        value="{{ request.session.s_khachhang.ten }}" placeholder="Tên" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="dien_thoai"
+                                        value="{{ request.session.s_khachhang.dien_thoai }}" placeholder="Điện thoại"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="text" name="email"
+                                        value="{{ request.session.s_khachhang.email }}" placeholder="Email" disabled>
+                                </div>
+                                <div class="col-md-12">
+                                    <input class="form-control" type="text" name="dia_chi"
+                                        value="{{ request.session.s_khachhang.dia_chi }}" placeholder="Địa chỉ"
+                                        required>
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn" type="submit" name="btnCapNhat" value="Cập nhật">Cập
+                                        nhật</button>
+                                    <br><br>
+                                </div>
+                            </div>
+                        </form>
+                        <h4>Đổi mật khẩu</h4>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ result_change_pwd|safe }}
+                                </div>
+                                <div class="col-md-12">
+                                    <input class="form-control" type="password" name="mat_khau_hien_tai"
+                                        placeholder="Mật khẩu hiện tại" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="password" name="mat_khau_moi"
+                                        placeholder="Mật khẩu mới" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input class="form-control" type="password" name="xac_nhan_mat_khau"
+                                        placeholder="Xác nhận mật khẩu" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn" name="btnDoiMatKhau" value="Đổi mật khẩu">Đổi mật khẩu</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- My Account End -->
+
+<!-- Modal -->
+{% for key, order in dict_orders.items %}
+    <div class="modal fade" id="o{{ key }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Hình sản phẩm</th>
+                            <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Số lượng</th>
+                            <th scope="col">Đơn giá</th>
+                            <th scope="col">Thành tiền</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for orderitem in order %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td><img src="{{ orderitem.product_image.url }}" alt="" width="70"></td>
+                                <td>{{ orderitem.product_name }}</td>
+                                <td>{{ orderitem.quantity }}</td>
+                                <td>{{ orderitem.price|floatformat:"0"|intcomma }}</td>
+                                <td>
+                                    {% with total=orderitem.quantity|mul:orderitem.price %}
+                                        {{ total|floatformat:"0"|intcomma }}
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td colspan="5"></td>
+                            <td>{{ order.0.total_price|floatformat:"0"|intcomma }}</td>
+                        </tr>
+                        
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+{% endblock %}

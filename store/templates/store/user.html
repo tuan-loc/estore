@@ -1,0 +1,95 @@
+{% extends 'store/_Master.html' %}
+{% load static %}
+{% block title_tab %}EStore | Đăng nhập{% endblock %}
+
+{% block main_content %}
+    <!-- Breadcrumb Start -->
+    <div class="breadcrumb-wrap">
+        <div class="container-fluid">
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Trang chủ</a></li>
+                <li class="breadcrumb-item active">Users</li>
+            </ul>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+    
+    <!-- Login Start -->
+    <div class="login">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">    
+                    <div class="register-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ result_register|safe }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form_user.username.label }}</label>
+                                    {{ form_user.username }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form_user.email.label }}</label>
+                                    {{ form_user.email }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form_user.password.label }}</label>
+                                    {{ form_user.password }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form_user.confirm_password.label }}</label>
+                                    {{ form_user.confirm_password }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form_profile.portfolio.label }}</label>
+                                    {{ form_profile.portfolio }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>{{ form_profile.image.label }}</label>
+                                    {{ form_profile.image }}
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <button class="btn" type="submit" name="btnDangKy" value="Đăng ký">Đăng ký</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="login-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                {% if request.user.is_authenticated %}
+                                    <div class="col-md-6">
+                                        <label>Xin chào bạn {{ request.user }}</label>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <a class="btn" href="{% url 'customer:logout_user' %}">Đăng xuất</a>
+                                    </div>
+                                {% else %}
+                                    <div class="col-md-6">
+                                        <label>Username</label>
+                                        <input class="form-control" type="text" placeholder="Username" name="username">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Password</label>
+                                        <input class="form-control" type="password" placeholder="Password" name="password">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <button class="btn" type="submit" name="btnDangNhap" value="Đăng nhập">Đăng nhập</button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Login End -->
+        
+{% endblock %}
